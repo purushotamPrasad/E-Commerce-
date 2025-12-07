@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className='bg-slate-200'>
       <div className='container mx-auto p-4'>
-       <p className='text-center font-bold' title="E-Commerce">Developed By Pravind Sharma</p>
+       <p className='text-center font-bold' title="E-Commerce">Developed By Purushotam kumar</p>
       </div>
     </footer>
   )
