@@ -32,7 +32,9 @@ async function userSignInController(req,res){
 
         const tokenOption = {
             httpOnly : true,
-            secure : true
+            secure : false,
+	    sameSite: "Lax",     // Cross-origin safe
+            maxAge: 8 * 60 * 60 * 1000  // 8 hours
         }
 
         res.cookie("token",token,tokenOption).status(200).json({

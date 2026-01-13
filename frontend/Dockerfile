@@ -1,36 +1,25 @@
-# --------------------------
-# Stage 1: Build React App
-# --------------------------
-FROM node:18-alpine as build
+# ---------- Stage 1: Build ----------
+FROM node:18-alpine AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+ENV GENERATE_SOURCEMAP=false
+ENV NODE_OPTIONS=--max-old-space-size=2048
+
 COPY package*.json ./
+RUN npm ci --legacy-peer-deps
 
-# Install dependencies
-RUN npm install
-
-# Copy all source files
 COPY . .
-
-# Build production version of React app
 RUN npm run build
 
-# --------------------------
-# Stage 2: Serve with Nginx
-# --------------------------
+# ---------- Stage 2: Nginx ----------
 FROM nginx:alpine
 
-# Remove default Nginx static files
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy React build from previous stage
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Expose port 80 for Nginx
 EXPOSE 80
 
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
+
