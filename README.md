@@ -41,7 +41,7 @@ change in 2 file mendetry
 1- sudo vi /etc/default/jenkins
 2- sudo vi /usr/lib/systemd/system/jenkins.service 
 jenins add success  
-
+email notification try to add
 then enable 
   3  sudo systemctl daemon-reload
   4  sudo systemctl enable jenkins
