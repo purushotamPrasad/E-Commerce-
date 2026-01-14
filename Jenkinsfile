@@ -2,46 +2,65 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_DIR = "/home/ubuntu/E-Commerce-"
-        BACKEND_IMAGE = "ecommerce-backend"
-        FRONTEND_IMAGE = "ecommerce-frontend"
-        EMAIL_RECIPIENTS = "purushotamkumar797043@gmail.com" // Change your email
+        EMAIL_RECIPIENTS = "purushotamkumar797043@gmail.com"
+    }
+
+    triggers {
+        githubPush()
     }
 
     stages {
-        stage('Checkout') {
+
+        stage('Stop Old Containers') {
             steps {
-                git branch: 'main', url: 'https://github.com/purushotaPrasad/E-Commerce-.git'
+                sh 'docker compose down || true'
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                dir("${PROJECT_DIR}") {
-                    sh 'docker-compose build'
-                }
+                sh 'docker compose build'
             }
         }
 
-        stage('Deploy Containers') {
+        stage('Run Containers') {
             steps {
-                dir("${PROJECT_DIR}") {
-                    sh 'docker-compose up -d'
-                }
+                sh 'docker compose up -d'
             }
         }
     }
 
     post {
         success {
-            mail to: "${EMAIL_RECIPIENTS}",
-                 subject: "Build & Deploy Success: ${env.JOB_NAME}",
-                 body: "Congrats! Your MERN app has been successfully deployed."
+            emailext(
+                to: "${EMAIL_RECIPIENTS}",
+                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                Build & Deployment Successful 🎉
+
+                Job: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                Status: SUCCESS
+
+                Your MERN application has been rebuilt and deployed successfully.
+                """
+            )
         }
+
         failure {
-            mail to: "${EMAIL_RECIPIENTS}",
-                 subject: "Build & Deploy Failed: ${env.JOB_NAME}",
-                 body: "Oops! Something went wrong. Check Jenkins logs for details."
+            emailext(
+                to: "${EMAIL_RECIPIENTS}",
+                subject: "❌ FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                Build or Deployment Failed ❌
+
+                Job: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                Status: FAILURE
+
+                Please check Jenkins console logs.
+                """
+            )
         }
     }
 }
