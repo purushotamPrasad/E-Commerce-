@@ -40,6 +40,7 @@ jenkins port confilct setup
 change in 2 file mendetry 
 1- sudo vi /etc/default/jenkins
 2- sudo vi /usr/lib/systemd/system/jenkins.service 
+jenins add success  
 
 then enable 
   3  sudo systemctl daemon-reload
