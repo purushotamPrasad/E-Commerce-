@@ -8,7 +8,7 @@ const router = require('./routes')
 
 const app = express()
 app.use(cors({
-    origin : ['http://localhost:3000', 'http://13.203.94.235:3000'],
+    origin : ['http://localhost:3000', 'http://13.235.207.32:3000'],
     credentials : true
 }))
 app.use(express.json())

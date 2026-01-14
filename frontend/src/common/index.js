@@ -1,4 +1,4 @@
-const backendDomin ="http://13.203.94.235:8080";
+const backendDomin ="http://13.235.207.32:8080";
 
 const SummaryApi = {
     signUP : {

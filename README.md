@@ -32,4 +32,17 @@ backend/controller/user/userSignIn.js
                 maxAge: 8*60*60*1000 // 8 hours
             }
  
-secure ko tru kar de jis se https secure login le 
+secure ko tru kar de jis se https secure login le
+
+
+
+jenkins port confilct setup 
+change in 2 file mendetry 
+1- sudo vi /etc/default/jenkins
+2- sudo vi /usr/lib/systemd/system/jenkins.service 
+
+then enable 
+  3  sudo systemctl daemon-reload
+  4  sudo systemctl enable jenkins
+  5  sudo systemctl start jenkins
+  6  sudo systemctl status jenkins
