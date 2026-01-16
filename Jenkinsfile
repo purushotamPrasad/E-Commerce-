@@ -26,7 +26,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonar-scanner') {
+                withSonarQubeEnv('sonarqube') {
                     sh """
                     ${SONAR_SCANNER}/bin/sonar-scanner \
                     -Dsonar.projectKey=ecommerce-backend \
