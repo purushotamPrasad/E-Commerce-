@@ -6,6 +6,9 @@ WORKDIR /app
 ENV GENERATE_SOURCEMAP=false
 ENV NODE_OPTIONS=--max-old-space-size=2048
 
+ENV npm_config_cache=/tmp/npm-cache
+RUN mkdir -p /tmp/npm-cache
+
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 
