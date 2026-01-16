@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         EMAIL_RECIPIENTS = "purushotamkumar797043@gmail.com"
-        SONAR_SCANNER = tool 'SonarScanner'
+        SONAR_SCANNER = tool 'sonar-scanner'
     }
 
     triggers {
@@ -49,7 +49,7 @@ pipeline {
     post {
         success {
             emailext(
-                to: "${EMAIL_RECIPIENTS}",
+                to: "${env.EMAIL_RECIPIENTS}",
                 subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
 Build & Deployment Successful 🎉
