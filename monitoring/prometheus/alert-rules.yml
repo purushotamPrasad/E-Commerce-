@@ -1,0 +1,12 @@
+groups:
+- name: application-alerts
+  rules:
+  - alert: ApplicationDown
+    expr: probe_success == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Application Down"
+      description: "Application {{ $labels.instance }} is DOWN"
+

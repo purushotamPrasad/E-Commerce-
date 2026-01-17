@@ -47,3 +47,10 @@ then enable
   4  sudo systemctl enable jenkins
   5  sudo systemctl start jenkins
   6  sudo systemctl status jenkins
+
+sonarqube docker composer file is here 
+ubuntu@ip-172-31-17-90:/opt/sonarqube$ ls
+docker-compose.yml
+
+
+for monitoring ke liye setup all thing in monitoring folder like docker-compose file and it set up graphana and promithius 

@@ -1,0 +1,15 @@
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'purushotamkumar797043@gmail.com'
+  smtp_auth_username: 'purushotamkumar797043@gmail.com'
+  smtp_auth_password: 'oupj xunq awrw sdik'
+
+route:
+  receiver: 'email-alert'
+
+receivers:
+  - name: 'email-alert'
+    email_configs:
+      - to: 'purushotamkumar797043@gmail.com'
+        send_resolved: true
+
