@@ -4,6 +4,8 @@ pipeline {
     environment {
         EMAIL_RECIPIENTS = "purushotamkumar797043@gmail.com"
         SONAR_SCANNER = tool 'sonar-scanner'
+        BACKEND_IMAGE = "ecommerce-backend:latest"
+        FRONTEND_IMAGE = "ecommerce-frontend:latest"
     }
 
     triggers {
@@ -11,6 +13,27 @@ pipeline {
     }
 
     stages {
+
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh """
+                    ${SONAR_SCANNER}/bin/sonar-scanner \
+                    -Dsonar.projectKey=ecommerce \
+                    -Dsonar.projectName=ecommerce \
+                    -Dsonar.sources=backend,frontend \
+                    -Dsonar.language=js \
+                    -Dsonar.sourceEncoding=UTF-8
+                    """
+                }
+            }
+        }
 
         stage('Stop Old Containers') {
             steps {
@@ -24,18 +47,25 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Trivy Image Scan (HTML)') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh """
-                    ${SONAR_SCANNER}/bin/sonar-scanner \
-                    -Dsonar.projectKey=ecommerce-backend \
-                    -Dsonar.projectName=ecommerce-backend \
-                    -Dsonar.sources=backend,frontend \
-                    -Dsonar.language=js \
-                    -Dsonar.sourceEncoding=UTF-8
-                    """
-                }
+                sh '''
+                mkdir -p trivy-reports
+
+                trivy image \
+                --severity HIGH,CRITICAL \
+                --format template \
+                --template "@/opt/trivy/html.tpl" \
+                -o trivy-reports/backend-trivy.html \
+                ecommerce-backend:latest
+
+                trivy image \
+                --severity HIGH,CRITICAL \
+                --format template \
+                --template "@/opt/trivy/html.tpl" \
+                -o trivy-reports/frontend-trivy.html \
+                ecommerce-frontend:latest
+                '''
             }
         }
 
@@ -47,21 +77,15 @@ pipeline {
     }
 
     post {
+        always {
+            archiveArtifacts artifacts: 'trivy-reports/*.html', fingerprint: true
+        }
+
         success {
             emailext(
-                to: "${env.EMAIL_RECIPIENTS}",
+                to: "${EMAIL_RECIPIENTS}",
                 subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-Build & Deployment Successful 🎉
-
-Job: ${env.JOB_NAME}
-Build Number: ${env.BUILD_NUMBER}
-Status: SUCCESS
-
-Docker images built
-SonarQube scan completed
-Application deployed successfully
-"""
+                body: "Build, Security Scan & Deployment Successful"
             )
         }
 
@@ -69,15 +93,7 @@ Application deployed successfully
             emailext(
                 to: "${EMAIL_RECIPIENTS}",
                 subject: "❌ FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-Build or Deployment Failed ❌
-
-Job: ${env.JOB_NAME}
-Build Number: ${env.BUILD_NUMBER}
-Status: FAILURE
-
-Please check Jenkins console logs.
-"""
+                body: "Pipeline failed. Check Jenkins logs."
             )
         }
     }
